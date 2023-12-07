@@ -31,7 +31,7 @@ func (o *OutputPrestateProvider) AbsolutePreStateCommitment(ctx context.Context)
 func (o *OutputPrestateProvider) outputAtBlock(ctx context.Context, block uint64) (common.Hash, error) {
 	output, err := o.rollupClient.OutputAtBlock(ctx, block)
 	if err != nil {
-		return common.Hash{}, fmt.Errorf("failed to fetch output at block %v: %w", o.prestateBlock, err)
+		return common.Hash{}, fmt.Errorf("failed to fetch output at block %v: %w", block, err)
 	}
 	return common.Hash(output.OutputRoot), nil
 }
