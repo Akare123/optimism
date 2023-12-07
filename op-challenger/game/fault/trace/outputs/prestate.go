@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/types"
-	"github.com/ethereum-optimism/optimism/op-service/dial"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
@@ -18,11 +17,7 @@ type OutputPrestateProvider struct {
 	rollupClient  OutputRollupClient
 }
 
-func NewPrestateProvider(ctx context.Context, logger log.Logger, rollupRpc string, prestateBlock uint64) (*OutputPrestateProvider, error) {
-	rollupClient, err := dial.DialRollupClientWithTimeout(ctx, dial.DefaultDialTimeout, logger, rollupRpc)
-	if err != nil {
-		return nil, err
-	}
+func NewPrestateProvider(ctx context.Context, logger log.Logger, rollupClient OutputRollupClient, prestateBlock uint64) (*OutputPrestateProvider, error) {
 	return &OutputPrestateProvider{
 		prestateBlock: prestateBlock,
 		rollupClient:  rollupClient,

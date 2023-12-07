@@ -40,7 +40,7 @@ func NewTraceProvider(ctx context.Context, logger log.Logger, rollupRpc string, 
 	if err != nil {
 		return nil, err
 	}
-	prestateProvider, err := NewPrestateProvider(ctx, logger, rollupRpc, prestateBlock)
+	prestateProvider, err := NewPrestateProvider(ctx, logger, rollupClient, prestateBlock)
 	if err != nil {
 		return nil, err
 	}
