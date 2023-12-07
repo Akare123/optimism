@@ -131,7 +131,11 @@ func setupAdapterTest(t *testing.T, topDepth int) (split.ProviderCreator, *captu
 			},
 		},
 	}
-	topProvider := NewTraceProviderFromInputs(testlog.Logger(t, log.LvlInfo), rollupClient, uint64(topDepth), prestateBlock, poststateBlock)
+	prestateProvider := &stubPrestateProvider{
+		absolutePrestate: prestateOutputRoot,
+		genesisOutput:    firstOutputRoot,
+	}
+	topProvider := NewTraceProviderFromInputs(testlog.Logger(t, log.LvlInfo), prestateProvider, rollupClient, uint64(topDepth), prestateBlock, poststateBlock)
 	adapter := OutputRootSplitAdapter(topProvider, creator.Create)
 	return adapter, creator
 }
@@ -205,4 +209,25 @@ func TestCreateLocalContext(t *testing.T) {
 			require.Equal(t, crypto.Keccak256Hash(test.expected), localContext)
 		})
 	}
+}
+
+type stubPrestateProvider struct {
+	errorsOnGenesisFetch          bool
+	errorsOnAbsolutePrestateFetch bool
+	absolutePrestate              common.Hash
+	genesisOutput                 common.Hash
+}
+
+func (s *stubPrestateProvider) AbsolutePreStateCommitment(_ context.Context) (common.Hash, error) {
+	if s.errorsOnAbsolutePrestateFetch {
+		return common.Hash{}, errNoOutputAtBlock
+	}
+	return s.absolutePrestate, nil
+}
+
+func (s *stubPrestateProvider) GenesisOutputRoot(_ context.Context) (common.Hash, error) {
+	if s.errorsOnGenesisFetch {
+		return common.Hash{}, errNoOutputAtBlock
+	}
+	return s.genesisOutput, nil
 }
